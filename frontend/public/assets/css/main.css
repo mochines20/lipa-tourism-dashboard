@@ -1,0 +1,42 @@
+/* Common styles */
+.card {
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* Chart container styles */
+.chart-container {
+    transition: all 0.3s ease;
+    min-height: 400px;
+    padding: 1rem;
+    background: white;
+    border-radius: 0.5rem;
+}
+
+.chart-container:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* Landmark card styles */
+.landmark-card {
+    transition: all 0.3s ease;
+}
+
+.landmark-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* Stats card styles */
+.stat-card {
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}

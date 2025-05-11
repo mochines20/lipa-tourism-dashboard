@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports - Lipa Tourism</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+    <nav class="bg-blue-600 text-white shadow-lg">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <i class="fas fa-landmark text-2xl mr-3"></i>
+                    <h1 class="text-2xl font-bold">Lipa Tourism</h1>
+                </div>
+                <div class="hidden md:flex space-x-4">
+                    <a href="index.html" class="px-4 py-2 rounded-lg hover:bg-blue-700 transition">Dashboard</a>
+                    <a href="landmarks.html" class="px-4 py-2 rounded-lg hover:bg-blue-700 transition">Landmarks</a>
+                    <a href="reports.html" class="px-4 py-2 rounded-lg bg-blue-700 transition">Reports</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-4 py-8">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6">Tourism Reports</h2>
+        
+        <!-- Search Bar -->
+        <div class="mb-6">
+            <input id="searchLandmark" type="text" placeholder="Search for a landmark..." class="w-full border border-gray-300 rounded-lg px-4 py-2">
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Monthly Report -->
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">Monthly Visitor Report</h3>
+                <div class="space-y-4" id="monthlyReportContent">
+                    <div class="flex justify-between items-center landmark-item">
+                        <span class="text-gray-600">Total Visitors:</span>
+                        <span class="font-semibold">1,234</span>
+                    </div>
+                    <div class="flex justify-between items-center landmark-item">
+                        <span class="text-gray-600">Most Popular Landmark:</span>
+                        <span class="font-semibold">San Sebastian Cathedral</span>
+                    </div>
+                    <div class="flex justify-between items-center landmark-item">
+                        <span class="text-gray-600">Peak Visit Time:</span>
+                        <span class="font-semibold">2:00 PM - 4:00 PM</span>
+                    </div>
+                    <button id="downloadReport" class="w-full mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                        Download Report
+                    </button>
+                </div>
+            </div>
+
+            <!-- Annual Growth Report -->
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">Annual Growth Report</h3>
+                <div class="mb-4">
+                    <select id="timePeriod" class="w-full border border-gray-300 rounded-lg px-4 py-2">
+                        <option value="yearly">Yearly</option>
+                        <option value="monthly">Monthly</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="daily">Daily</option>
+                    </select>
+                </div>
+                <canvas id="growthChart" class="w-full h-64"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Placeholder -->
+    <div id="footer-placeholder"></div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+        // Initialize Growth Chart
+        const ctx = document.getElementById('growthChart').getContext('2d');
+        let growthChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['2021', '2022', '2023', '2024', '2025'],
+                datasets: [{
+                    label: 'Annual Visitors',
+                    data: [15000, 18000, 22000, 25000, 30000],
+                    backgroundColor: 'rgba(59, 130, 246, 0.5)',
+                    borderColor: 'rgba(59, 130, 246, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Update Growth Chart Based on Time Period
+        document.getElementById('timePeriod').addEventListener('change', (e) => {
+            const period = e.target.value;
+            let labels, data;
+
+            if (period === 'yearly') {
+                labels = ['2021', '2022', '2023', '2024', '2025'];
+                data = [15000, 18000, 22000, 25000, 30000];
+            } else if (period === 'monthly') {
+                labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                data = [1200, 1500, 1800, 2000, 2200, 2500, 2700, 3000, 3200, 3500, 3700, 4000];
+            } else if (period === 'weekly') {
+                labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
+                data = [300, 400, 500, 600];
+            } else if (period === 'daily') {
+                labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+                data = [50, 60, 70, 80, 90, 100, 110];
+            }
+
+            growthChart.data.labels = labels;
+            growthChart.data.datasets[0].data = data;
+            growthChart.update();
+        });
+
+        // Search for a Landmark
+        document.getElementById('searchLandmark').addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const items = document.querySelectorAll('.landmark-item');
+
+            items.forEach(item => {
+                const text = item.innerText.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+
+        // Download Monthly Report as PDF with Chart
+        document.getElementById('downloadReport').addEventListener('click', async () => {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Add title
+            doc.setFontSize(18);
+            doc.text('Monthly Visitor Report', 10, 10);
+
+            // Add content
+            const content = document.getElementById('monthlyReportContent').innerText;
+            doc.setFontSize(12);
+            doc.text(content, 10, 20);
+
+            // Add chart to PDF
+            const chartCanvas = document.getElementById('growthChart');
+            const chartImage = await html2canvas(chartCanvas).then(canvas => canvas.toDataURL('image/png'));
+            doc.addImage(chartImage, 'PNG', 10, 50, 180, 100);
+
+            // Open PDF in a new window for preview
+            window.open(doc.output('bloburl'), '_blank');
+        });
+
+        // Dynamically load the footer
+        document.getElementById('footer-placeholder').innerHTML = `
+            <footer class="bg-gray-800 text-white py-8">
+                <div class="container mx-auto px-6">
+                    <div class="flex flex-col md:flex-row justify-between items-center">
+                        <div class="mb-4 md:mb-0">
+                            <h3 class="text-xl font-bold">Lipa City Tourism</h3>
+                            <p class="text-gray-400">Exploring the beauty of Lipa City</p>
+                        </div>
+                        <div class="flex space-x-4">
+                            <a href="#" class="hover:text-blue-400 transition"><i class="fab fa-facebook"></i></a>
+                            <a href="#" class="hover:text-blue-400 transition"><i class="fab fa-twitter"></i></a>
+                            <a href="#" class="hover:text-blue-400 transition"><i class="fab fa-instagram"></i></a>
+                        </div>
+                    </div>
+                    <div class="mt-8 text-center text-gray-400 text-sm">
+                        © 2025 Lipa City Tourism. All rights reserved.
+                    </div>
+                </div>
+            </footer>
+        `;
+    </script>
+</body>
+</html>

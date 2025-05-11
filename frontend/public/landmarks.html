@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Landmarks - Lipa Tourism</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="assets/css/main.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+    <nav class="bg-blue-600 text-white shadow-lg">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <i class="fas fa-landmark text-2xl mr-3"></i>
+                    <h1 class="text-2xl font-bold">Lipa Tourism</h1>
+                </div>
+                <div class="hidden md:flex space-x-4">
+                    <a href="index.html" class="px-4 py-2 rounded-lg hover:bg-blue-700 transition">Dashboard</a>
+                    <a href="landmarks.html" class="px-4 py-2 rounded-lg bg-blue-700 transition">Landmarks</a>
+                    <a href="reports.html" class="px-4 py-2 rounded-lg hover:bg-blue-700 transition">Reports</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-4 py-8">
+        <div class="flex justify-between items-center mb-6">
+            <div>
+                <h2 class="text-2xl font-bold text-gray-800">Historical Landmarks</h2>
+                <p class="text-gray-600 mt-2">Discover Lipa's rich cultural heritage</p>
+            </div>
+            <div class="flex space-x-4">
+                <select id="categoryFilter" class="bg-gray-50 border border-gray-300 rounded-lg px-4 py-2">
+                    <option value="all">All Categories</option>
+                    <option value="churches">Churches</option>
+                    <option value="museums">Museums</option>
+                    <option value="parks">Parks</option>
+                    <option value="historical-sites">Historical Sites</option>
+                </select>
+                <button id="addLandmarkButton" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                    <i class="fas fa-plus mr-2"></i>Add Landmark
+                </button>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- San Sebastian Cathedral Card -->
+            <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-lg transition landmark-card" data-category="churches">
+                <img src="assets/images/cathedral.jpg" alt="San Sebastian Cathedral" class="w-full h-48 object-cover">
+                <div class="p-6">
+                    <div class="flex justify-between items-start">
+                        <h3 class="text-xl font-semibold text-gray-800">San Sebastian Cathedral</h3>
+                        <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Church</span>
+                    </div>
+                    <p class="text-gray-600 mt-2">Historical cathedral built in 1865, featuring stunning Gothic-Renaissance architecture.</p>
+                    <div class="mt-4 flex justify-between items-center">
+                        <div class="flex items-center">
+                            <i class="fas fa-star text-yellow-400"></i>
+                            <span class="ml-1 text-gray-600">4.8 (120 reviews)</span>
+                        </div>
+                        <button class="text-blue-600 hover:text-blue-800 view-details-button">View Details</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Casa de Segunda Card -->
+            <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-lg transition landmark-card" data-category="museums">
+                <img src="assets/images/casa.jpg" alt="Casa de Segunda" class="w-full h-48 object-cover">
+                <div class="p-6">
+                    <div class="flex justify-between items-start">
+                        <h3 class="text-xl font-semibold text-gray-800">Casa de Segunda</h3>
+                        <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">Museum</span>
+                    </div>
+                    <p class="text-gray-600 mt-2">Historical house museum showcasing 19th-century Filipino lifestyle and culture.</p>
+                    <div class="mt-4 flex justify-between items-center">
+                        <div class="flex items-center">
+                            <i class="fas fa-star text-yellow-400"></i>
+                            <span class="ml-1 text-gray-600">4.6 (85 reviews)</span>
+                        </div>
+                        <button class="text-blue-600 hover:text-blue-800 view-details-button">View Details</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Landmark Modal -->
+    <div id="addLandmarkModal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
+        <div class="bg-white rounded-lg p-6 w-96">
+            <h3 class="text-xl font-bold mb-4">Add Landmark</h3>
+            <form id="addLandmarkForm">
+                <div class="mb-4">
+                    <label for="landmarkName" class="block text-gray-700">Name</label>
+                    <input type="text" id="landmarkName" class="w-full border border-gray-300 rounded-lg px-4 py-2">
+                </div>
+                <div class="mb-4">
+                    <label for="landmarkCategory" class="block text-gray-700">Category</label>
+                    <select id="landmarkCategory" class="w-full border border-gray-300 rounded-lg px-4 py-2">
+                        <option value="churches">Church</option>
+                        <option value="museums">Museum</option>
+                        <option value="parks">Park</option>
+                        <option value="historical-sites">Historical Site</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label for="landmarkDescription" class="block text-gray-700">Description</label>
+                    <textarea id="landmarkDescription" class="w-full border border-gray-300 rounded-lg px-4 py-2"></textarea>
+                </div>
+                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">Add</button>
+                <button type="button" id="closeModal" class="ml-2 text-gray-600 hover:text-gray-800">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- View Details Modal -->
+    <div id="viewDetailsModal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
+        <div class="bg-white rounded-lg p-6 w-96">
+            <h3 id="landmarkTitle" class="text-xl font-bold mb-4"></h3>
+            <p id="landmarkDetails" class="text-gray-700"></p>
+            <button id="closeDetailsModal" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">Close</button>
+        </div>
+    </div>
+
+    <!-- Footer Placeholder -->
+    <div id="footer-placeholder"></div>
+
+    <!-- Scripts -->
+    <script>
+        // Dynamically load the footer
+        document.getElementById('footer-placeholder').innerHTML = `
+            <footer class="bg-gray-800 text-white py-8">
+                <div class="container mx-auto px-6">
+                    <div class="flex flex-col md:flex-row justify-between items-center">
+                        <div class="mb-4 md:mb-0">
+                            <h3 class="text-xl font-bold">Lipa City Tourism</h3>
+                            <p class="text-gray-400">Exploring the beauty of Lipa City</p>
+                        </div>
+                        <div class="flex space-x-4">
+                            <a href="#" class="hover:text-blue-400 transition"><i class="fab fa-facebook"></i></a>
+                            <a href="#" class="hover:text-blue-400 transition"><i class="fab fa-twitter"></i></a>
+                            <a href="#" class="hover:text-blue-400 transition"><i class="fab fa-instagram"></i></a>
+                        </div>
+                    </div>
+                    <div class="mt-8 text-center text-gray-400 text-sm">
+                        © 2025 Lipa City Tourism. All rights reserved.
+                    </div>
+                </div>
+            </footer>
+        `;
+
+        // Filter landmarks by category
+        document.getElementById('categoryFilter').addEventListener('change', (e) => {
+            const selectedCategory = e.target.value;
+            const landmarks = document.querySelectorAll('.landmark-card');
+
+            landmarks.forEach((landmark) => {
+                const category = landmark.getAttribute('data-category');
+                if (selectedCategory === 'all' || category === selectedCategory) {
+                    landmark.style.display = 'block';
+                } else {
+                    landmark.style.display = 'none';
+                }
+            });
+        });
+
+        // Open and close the "Add Landmark" modal
+        document.getElementById('addLandmarkButton').addEventListener('click', () => {
+            document.getElementById('addLandmarkModal').classList.remove('hidden');
+        });
+
+        document.getElementById('closeModal').addEventListener('click', () => {
+            document.getElementById('addLandmarkModal').classList.add('hidden');
+        });
+
+        // Handle "Add Landmark" form submission
+        document.getElementById('addLandmarkForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('landmarkName').value;
+            const category = document.getElementById('landmarkCategory').value;
+            const description = document.getElementById('landmarkDescription').value;
+
+            const container = document.querySelector('.grid');
+            container.innerHTML += `
+                <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-lg transition landmark-card" data-category="${category}">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold text-gray-800">${name}</h3>
+                        <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">${category}</span>
+                        <p class="text-gray-600 mt-2">${description}</p>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('addLandmarkModal').classList.add('hidden');
+        });
+
+        // Open the "View Details" modal
+        document.querySelectorAll('.view-details-button').forEach((button) => {
+            button.addEventListener('click', (e) => {
+                const card = e.target.closest('.landmark-card');
+                const title = card.querySelector('h3').textContent;
+                const details = card.querySelector('p').textContent;
+
+                document.getElementById('landmarkTitle').textContent = title;
+                document.getElementById('landmarkDetails').textContent = details;
+
+                document.getElementById('viewDetailsModal').classList.remove('hidden');
+            });
+        });
+
+        // Close the "View Details" modal
+        document.getElementById('closeDetailsModal').addEventListener('click', () => {
+            document.getElementById('viewDetailsModal').classList.add('hidden');
+        });
+    </script>
+</body>
+</html>
