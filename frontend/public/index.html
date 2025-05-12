@@ -81,12 +81,13 @@
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-xl font-semibold text-gray-800">Visitor Trends</h2>
                 <select id="timeRange" class="bg-gray-50 border border-gray-300 rounded-lg px-4 py-2">
-                    <option value="week">Last Week</option>
-                    <option value="month" selected>Last Month</option>
-                    <option value="year">Last Year</option>
+                    <option value="daily">Daily</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="monthly" selected>Monthly</option>
+                    <option value="yearly">Yearly</option>
                 </select>
             </div>
-            <div style="min-height: 400px;">
+            <div style="height: 400px; position: relative;">
                 <canvas id="visitorChart"></canvas>
             </div>
         </div>
@@ -113,8 +114,7 @@
     </footer>
 
     <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script type="module" src="assets/js/charts.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js/dist/chart.umd.min.js"></script>
     <script type="module" src="assets/js/main.js"></script>
 </body>
 </html>
