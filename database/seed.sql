@@ -51,6 +51,22 @@ INSERT INTO `landmarks` (`id`, `name`, `description`, `location`, `category`, `c
 (7, 'Casa de Segunda', 'Historical house museum', 'Lipa City', 'Museums', '2025-05-12 07:46:33', '2025-05-12 07:46:33'),
 (8, 'Mount Malarayat', 'Mountain range for hiking', 'Lipa City', 'Natural Attractions', '2025-05-12 07:46:33', '2025-05-12 07:46:33');
 
+-- Update landmarks with consistent categories
+UPDATE landmarks SET category = 'churches' WHERE name LIKE '%Cathedral%';
+UPDATE landmarks SET category = 'museums' WHERE name LIKE '%Casa%';
+UPDATE landmarks SET category = 'parks' WHERE name LIKE '%Park%';
+UPDATE landmarks SET category = 'historical-sites' WHERE name LIKE '%Historical%';
+UPDATE landmarks SET category = 'natural-attractions' WHERE name LIKE '%Mount%' OR name LIKE '%Volcano%';
+
+-- Update new landmarks with proper categories
+UPDATE landmarks SET category = 
+    CASE 
+        WHEN category = 'Cultural' THEN 'historical-sites'
+        WHEN category = 'Natural' THEN 'natural-attractions'
+        WHEN category = 'Recreational' THEN 'parks'
+        ELSE category
+    END;
+
 -- --------------------------------------------------------
 
 --

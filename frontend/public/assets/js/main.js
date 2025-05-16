@@ -294,3 +294,26 @@ function initializeRadarChart() {
     });
     console.log('Radar chart initialized');
 }
+
+// Handle image error to set default image
+function handleImageError(img) {
+    img.onerror = null;  // Prevent infinite loop
+    img.src = 'assets/images/landmarks/default.jpg';
+}
+
+// Update the landmark cards HTML generation
+function createLandmarkCard(landmark) {
+    return `
+        <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-lg transition landmark-card" data-category="${landmark.category}">
+            <img src="assets/images/landmarks/${landmark.image_url}" 
+                 alt="${landmark.name}" 
+                 class="w-full h-48 object-cover"
+                 onerror="handleImageError(this)">
+            <div class="p-6">
+                <h2 class="text-xl font-semibold mb-2">${landmark.name}</h2>
+                <p class="text-gray-700 mb-4">${landmark.description}</p>
+                <a href="landmark.html?id=${landmark.id}" class="text-blue-600 hover:underline">View Details</a>
+            </div>
+        </div>
+    `;
+}

@@ -30,7 +30,7 @@ try {
     switch($method) {
         case 'GET':
             // Fetch all landmarks
-            $query = "SELECT * FROM landmarks ORDER BY name";
+            $query = "SELECT * FROM landmarks ORDER BY created_at DESC";
             $stmt = $db->prepare($query);
             $stmt->execute();
             $landmarks = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -40,15 +40,20 @@ try {
         case 'POST':
             // Add a new landmark
             $data = json_decode(file_get_contents("php://input"));
-            $query = "INSERT INTO landmarks (name, category, description) VALUES (:name, :category, :description)";
+            
+            $query = "INSERT INTO landmarks (name, description, category, image_url) 
+                      VALUES (:name, :description, :category, :image_url)";
+            
             $stmt = $db->prepare($query);
             $stmt->bindParam(":name", $data->name);
-            $stmt->bindParam(":category", $data->category);
             $stmt->bindParam(":description", $data->description);
+            $stmt->bindParam(":category", $data->category);
+            $stmt->bindParam(":image_url", $data->image_url);
+            
             if($stmt->execute()) {
-                echo json_encode(["message" => "Landmark added successfully"]);
+                echo json_encode(["success" => true, "message" => "Landmark added successfully"]);
             } else {
-                echo json_encode(["message" => "Unable to add landmark"]);
+                echo json_encode(["success" => false, "message" => "Failed to add landmark"]);
             }
             break;
 
@@ -72,4 +77,4 @@ try {
     http_response_code(500);
     echo json_encode(['error' => $e->getMessage()]);
 }
-?> 
+?>

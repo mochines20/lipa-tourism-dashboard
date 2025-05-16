@@ -38,6 +38,7 @@
                     <option value="museums">Museums</option>
                     <option value="parks">Parks</option>
                     <option value="historical-sites">Historical Sites</option>
+                    <option value="natural-attractions">Natural Attractions</option>
                 </select>
                 <button id="addLandmarkButton" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
                     <i class="fas fa-plus mr-2"></i>Add Landmark
@@ -90,18 +91,26 @@
     <div id="addLandmarkModal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
         <div class="bg-white rounded-lg p-6 w-96">
             <h3 class="text-xl font-bold mb-4">Add Landmark</h3>
-            <form id="addLandmarkForm">
+            <form id="addLandmarkForm" enctype="multipart/form-data">
                 <div class="mb-4">
                     <label for="landmarkName" class="block text-gray-700">Name</label>
                     <input type="text" id="landmarkName" class="w-full border border-gray-300 rounded-lg px-4 py-2">
                 </div>
                 <div class="mb-4">
+                    <label for="landmarkImage" class="block text-gray-700">Image</label>
+                    <input type="file" id="landmarkImage" accept="image/*" class="w-full border border-gray-300 rounded-lg px-4 py-2">
+                    <div id="imagePreview" class="mt-2 hidden">
+                        <img src="" alt="Preview" class="w-full h-48 object-cover rounded">
+                    </div>
+                </div>
+                <div class="mb-4">
                     <label for="landmarkCategory" class="block text-gray-700">Category</label>
                     <select id="landmarkCategory" class="w-full border border-gray-300 rounded-lg px-4 py-2">
-                        <option value="churches">Church</option>
-                        <option value="museums">Museum</option>
-                        <option value="parks">Park</option>
-                        <option value="historical-sites">Historical Site</option>
+                        <option value="churches">Churches</option>
+                        <option value="museums">Museums</option>
+                        <option value="parks">Parks</option>
+                        <option value="historical-sites">Historical Sites</option>
+                        <option value="natural-attractions">Natural Attractions</option>
                     </select>
                 </div>
                 <div class="mb-4">
@@ -154,13 +163,13 @@
         document.getElementById('categoryFilter').addEventListener('change', (e) => {
             const selectedCategory = e.target.value;
             const landmarks = document.querySelectorAll('.landmark-card');
-
+            
             landmarks.forEach((landmark) => {
-                const category = landmark.getAttribute('data-category');
-                if (selectedCategory === 'all' || category === selectedCategory) {
+                if (selectedCategory === 'all') {
                     landmark.style.display = 'block';
                 } else {
-                    landmark.style.display = 'none';
+                    const category = landmark.getAttribute('data-category').toLowerCase();
+                    landmark.style.display = category === selectedCategory.toLowerCase() ? 'block' : 'none';
                 }
             });
         });
@@ -174,45 +183,118 @@
             document.getElementById('addLandmarkModal').classList.add('hidden');
         });
 
-        // Handle "Add Landmark" form submission
-        document.getElementById('addLandmarkForm').addEventListener('submit', (e) => {
+        // Add image preview functionality
+        document.getElementById('landmarkImage').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('imagePreview');
+                    preview.classList.remove('hidden');
+                    preview.querySelector('img').src = e.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Add function to load landmarks
+        async function loadLandmarks() {
+            try {
+                const response = await fetch('/lipa-tourism-dashboard/api/landmarks.php');
+                const landmarks = await response.json();
+                const container = document.querySelector('.grid');
+                container.innerHTML = ''; // Clear existing landmarks
+                
+                landmarks.forEach(landmark => {
+                    container.innerHTML += `
+                        <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-lg transition landmark-card" data-category="${landmark.category}">
+                            <img src="assets/images/landmarks/${landmark.image_url || 'default.jpg'}" 
+                                 alt="${landmark.name}" 
+                                 class="w-full h-48 object-cover"
+                                 onerror="handleImageError(this)">
+                            <div class="p-6">
+                                <div class="flex justify-between items-start">
+                                    <h3 class="text-xl font-semibold text-gray-800">${landmark.name}</h3>
+                                    <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">${landmark.category.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</span>
+                                </div>
+                                <p class="text-gray-600 mt-2">${landmark.description}</p>
+                                <div class="mt-4">
+                                    <button class="text-blue-600 hover:text-blue-800 view-details-button">View Details</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                // Reattach event listeners for view details buttons
+                attachViewDetailsListeners();
+            } catch (error) {
+                console.error('Error loading landmarks:', error);
+            }
+        }
+
+        // Load landmarks when page loads
+        document.addEventListener('DOMContentLoaded', loadLandmarks);
+
+        // Update form submission to save to database
+        document.getElementById('addLandmarkForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const name = document.getElementById('landmarkName').value;
-            const category = document.getElementById('landmarkCategory').value;
-            const description = document.getElementById('landmarkDescription').value;
+            const formData = new FormData();
+            const imageFile = document.getElementById('landmarkImage').files[0];
+            
+            try {
+                // First upload the image
+                formData.append('image', imageFile);
+                const uploadResponse = await fetch('/lipa-tourism-dashboard/api/upload-image.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                const uploadResult = await uploadResponse.json();
 
-            const container = document.querySelector('.grid');
-            container.innerHTML += `
-                <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-lg transition landmark-card" data-category="${category}">
-                    <div class="p-6">
-                        <h3 class="text-xl font-semibold text-gray-800">${name}</h3>
-                        <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">${category}</span>
-                        <p class="text-gray-600 mt-2">${description}</p>
-                    </div>
-                </div>
-            `;
+                if (uploadResult.success) {
+                    // Then save landmark data
+                    const landmarkData = {
+                        name: document.getElementById('landmarkName').value,
+                        category: document.getElementById('landmarkCategory').value,
+                        description: document.getElementById('landmarkDescription').value,
+                        image_url: uploadResult.filename
+                    };
 
-            document.getElementById('addLandmarkModal').classList.add('hidden');
+                    const saveResponse = await fetch('/lipa-tourism-dashboard/api/landmarks.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(landmarkData)
+                    });
+
+                    const saveResult = await saveResponse.json();
+                    if (saveResult.success) {
+                        document.getElementById('addLandmarkModal').classList.add('hidden');
+                        document.getElementById('addLandmarkForm').reset();
+                        document.getElementById('imagePreview').classList.add('hidden');
+                        // Reload landmarks to show new addition
+                        loadLandmarks();
+                    }
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error adding landmark');
+            }
         });
 
-        // Open the "View Details" modal
-        document.querySelectorAll('.view-details-button').forEach((button) => {
-            button.addEventListener('click', (e) => {
-                const card = e.target.closest('.landmark-card');
-                const title = card.querySelector('h3').textContent;
-                const details = card.querySelector('p').textContent;
+        function attachViewDetailsListeners() {
+            document.querySelectorAll('.view-details-button').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const card = e.target.closest('.landmark-card');
+                    const title = card.querySelector('h3').textContent;
+                    const details = card.querySelector('p').textContent;
 
-                document.getElementById('landmarkTitle').textContent = title;
-                document.getElementById('landmarkDetails').textContent = details;
-
-                document.getElementById('viewDetailsModal').classList.remove('hidden');
+                    document.getElementById('landmarkTitle').textContent = title;
+                    document.getElementById('landmarkDetails').textContent = details;
+                    document.getElementById('viewDetailsModal').classList.remove('hidden');
+                });
             });
-        });
-
-        // Close the "View Details" modal
-        document.getElementById('closeDetailsModal').addEventListener('click', () => {
-            document.getElementById('viewDetailsModal').classList.add('hidden');
-        });
+        }
     </script>
 </body>
 </html>
