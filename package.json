@@ -1,0 +1,20 @@
+{
+  "name": "lipa-tourism-dashboard",
+  "version": "1.0.0",
+  "description": "This project is a full-stack application designed to provide insights into tourism data for Lipa City, Batangas. It features a responsive dashboard that visualizes various tourism metrics using charts.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "mysql2": "^3.14.1"
+  }
+}

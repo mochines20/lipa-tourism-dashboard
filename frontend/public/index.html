@@ -91,6 +91,28 @@
                 <canvas id="visitorChart"></canvas>
             </div>
         </div>
+
+        <!-- Additional Charts -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="chart-container bg-white p-6 rounded-xl shadow-sm" style="min-height:350px;">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Landmark Comparison (Bar)</h2>
+                <div>
+                    <canvas id="barChart" width="400" height="320" style="display:block"></canvas>
+                </div>
+            </div>
+            <div class="chart-container bg-white p-6 rounded-xl shadow-sm" style="min-height:350px;">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Visitor Breakdown (Pie)</h2>
+                <div>
+                    <canvas id="pieChart" width="400" height="320" style="display:block"></canvas>
+                </div>
+            </div>
+            <div class="chart-container bg-white p-6 rounded-xl shadow-sm" style="min-height:350px;">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Visitor Profile (Radar)</h2>
+                <div>
+                    <canvas id="radarChart" width="400" height="320" style="display:block"></canvas>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Footer -->
@@ -115,6 +137,6 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js/dist/chart.umd.min.js"></script>
-    <script type="module" src="assets/js/main.js"></script>
+    <script src="assets/js/main.js"></script>
 </body>
 </html>

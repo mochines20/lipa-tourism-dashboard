@@ -37,32 +37,29 @@ try {
                 case 'daily':
                     $query = "SELECT DATE(visit_date) as label, SUM(visitor_count) as visitors 
                              FROM visits 
-                             WHERE visit_date >= DATE_SUB(CURRENT_DATE, INTERVAL 7 DAY)
                              GROUP BY DATE(visit_date)
-                             ORDER BY visit_date";
+                             ORDER BY DATE(visit_date)";
                     break;
                     
                 case 'weekly':
-                    $query = "SELECT CONCAT('Week ', WEEK(visit_date)) as label, SUM(visitor_count) as visitors 
+                    $query = "SELECT CONCAT(YEAR(visit_date), '-W', LPAD(WEEK(visit_date, 1),2,'0')) as label, SUM(visitor_count) as visitors 
                              FROM visits 
-                             WHERE visit_date >= DATE_SUB(CURRENT_DATE, INTERVAL 4 WEEK)
-                             GROUP BY WEEK(visit_date)
-                             ORDER BY WEEK(visit_date)";
+                             GROUP BY YEAR(visit_date), WEEK(visit_date, 1)
+                             ORDER BY YEAR(visit_date), WEEK(visit_date, 1)";
                     break;
                     
                 case 'monthly':
-                    $query = "SELECT DATE_FORMAT(visit_date, '%b') as label, SUM(visitor_count) as visitors 
+                    $query = "SELECT CONCAT(YEAR(visit_date), '-', LPAD(MONTH(visit_date),2,'0')) as label, SUM(visitor_count) as visitors 
                              FROM visits 
-                             WHERE visit_date >= DATE_SUB(CURRENT_DATE, INTERVAL 12 MONTH)
-                             GROUP BY MONTH(visit_date)
-                             ORDER BY visit_date";
+                             GROUP BY YEAR(visit_date), MONTH(visit_date)
+                             ORDER BY YEAR(visit_date), MONTH(visit_date)";
                     break;
                     
                 case 'yearly':
                     $query = "SELECT YEAR(visit_date) as label, SUM(visitor_count) as visitors 
                              FROM visits 
                              GROUP BY YEAR(visit_date)
-                             ORDER BY visit_date";
+                             ORDER BY YEAR(visit_date)";
                     break;
             }
             
@@ -101,4 +98,3 @@ try {
     http_response_code(500);
     echo json_encode(['error' => $e->getMessage()]);
 }
-?>
