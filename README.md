@@ -1,41 +1,160 @@
 # Lipa Tourism Dashboard
 
-Interactive dashboard for visualizing tourism data in Lipa City, Batangas.
+A full-stack web application that visualizes tourism data for Lipa City, Batangas. The dashboard provides insights into visitor trends, landmark popularity, and tourism statistics through interactive charts and visualizations.
 
 ## Features
-- Visitor trends visualization
-- Landmark statistics
-- Tourist profile analysis
-- Interactive charts and graphs
+
+- Interactive data visualization using Chart.js
+- Responsive design using Tailwind CSS
+- Real-time data updates
+- Multiple chart types (Bar, Line, Pie, Radar)
+- RESTful API endpoints
+- MySQL database integration
 
 ## Tech Stack
-- Frontend: HTML, CSS (Tailwind), JavaScript (Chart.js)
-- Backend: PHP
-- Database: MySQL
 
-## Setup
-1. Clone repository:
+### Frontend
+- React.js
+- Chart.js
+- Tailwind CSS
+- React Router
+
+### Backend
+- PHP
+- MySQL
+- Apache (XAMPP)
+
+## Prerequisites
+
+- XAMPP (PHP 8.0 or higher)
+- MySQL (v8.0 or higher)
+- Node.js (v14 or higher) for frontend development
+- npm or yarn
+
+## Installation
+
+1. Clone the repository:
 ```bash
-git clone https://github.com/YOUR_USERNAME/lipa-tourism-dashboard.git
+git clone https://github.com/yourusername/lipa-tourism-dashboard.git
+cd lipa-tourism-dashboard
 ```
 
-2. Place in XAMPP htdocs:
+2. Set up XAMPP:
+- Install XAMPP if not already installed
+- Place the project in the `htdocs` directory
+- Start Apache and MySQL services
+
+3. Set up the database:
+- Open phpMyAdmin (http://localhost/phpmyadmin)
+- Create a new database named `lipa_tourism`
+- Import the database schema from `database/schema.sql`
+- Import sample data from `database/seed.sql`
+
+4. Install frontend dependencies:
 ```bash
-cd /xampp/htdocs/lipa-tourism-dashboard
+cd frontend
+npm install
 ```
 
-3. Import database:
+## Running the Application
+
+1. Start XAMPP services:
+- Start Apache
+- Start MySQL
+
+2. Start the frontend development server:
 ```bash
-mysql -u root -p lipa_tourism < database/seed.sql
+cd frontend
+npm start
 ```
 
-4. Access the dashboard:
-```
-http://localhost/lipa-tourism-dashboard/frontend/public/
-```
+The application will be available at:
+- Frontend: http://localhost:3000
+- Backend API: http://localhost/lipa-tourism-dashboard/api/
 
-## Project Structure
-- `/frontend` - Frontend code and assets
-- `/api` - PHP API endpoints
-- `/database` - Database schema and seeds
-- `/docs` - Documentation files
+## API Documentation
+
+### GET Endpoints
+
+1. **Get All Landmarks**
+   ```
+   GET http://localhost/lipa-tourism-dashboard/api/landmarks.php
+   ```
+   Returns a list of all landmarks in the database.
+
+2. **Get Landmarks by Category**
+   ```
+   GET http://localhost/lipa-tourism-dashboard/api/landmarks-by-category.php?category=churches
+   ```
+   Returns landmarks filtered by the specified category.
+
+3. **Get Landmark Statistics**
+   ```
+   GET http://localhost/lipa-tourism-dashboard/api/landmark-stats.php
+   ```
+   Returns statistics for all landmarks including total visits and visitor counts.
+
+4. **Get All Visits**
+   ```
+   GET http://localhost/lipa-tourism-dashboard/api/visits.php
+   ```
+   Returns a list of all visits recorded in the database.
+
+5. **Get Visits by Date Range**
+   ```
+   GET http://localhost/lipa-tourism-dashboard/api/visits-by-date.php?start_date=2025-01-01&end_date=2025-12-31
+   ```
+   Returns visits filtered by the specified date range.
+
+6. **Get Visitor Trends**
+   ```
+   GET http://localhost/lipa-tourism-dashboard/api/visitor-trends.php
+   ```
+   Returns visitor trends data for analysis.
+
+7. **Get Visits by Landmark**
+   ```
+   GET http://localhost/lipa-tourism-dashboard/api/visits.php?landmark_id=1
+   ```
+   Returns visits filtered by a specific landmark ID.
+
+## Database Schema
+
+The database consists of two main tables:
+
+### Landmarks
+- id (Primary Key)
+- name
+- description
+- location
+- category
+- image_url
+- created_at
+- updated_at
+
+### Visits
+- id (Primary Key)
+- landmark_id (Foreign Key)
+- visit_date
+- visitor_count
+- created_at
+- updated_at
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgments
+
+- Batangas State University
+- Lipa City Tourism Office
+- Chart.js for the visualization library
+- React.js community

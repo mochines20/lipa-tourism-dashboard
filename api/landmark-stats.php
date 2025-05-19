@@ -12,21 +12,22 @@ try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    // Get visitor trends for the last 30 days
     $stmt = $pdo->query("
         SELECT 
-            DATE(visit_date) as date,
-            COUNT(*) as visit_count
-        FROM visits
-        WHERE visit_date >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
-        GROUP BY DATE(visit_date)
-        ORDER BY date DESC
+            l.*,
+            COUNT(v.id) as total_visits,
+            SUM(v.visitor_count) as total_visitors
+        FROM landmarks l
+        LEFT JOIN visits v ON l.id = v.landmark_id
+        GROUP BY l.id
+        ORDER BY total_visitors DESC
     ");
-    $trends = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    $stats = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    echo json_encode($trends);
+    echo json_encode($stats);
 } catch(PDOException $e) {
     http_response_code(500);
     echo json_encode(['error' => 'Database error: ' . $e->getMessage()]);
 }
-?>
+?> 
