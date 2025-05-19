@@ -94,15 +94,15 @@ The application will be available at:
    ```
    Returns statistics for all landmarks including total visits and visitor counts.
 
-4. **Get All Visits**
+4. **Get Visits Statistics**
    ```
-   GET http://localhost/lipa-tourism-dashboard/api/visits.php
+   GET http://localhost/lipa-tourism-dashboard/api/visits.php?period=daily|weekly|monthly|yearly
    ```
-   Returns a list of all visits recorded in the database.
+   Returns visitor statistics filtered by period (daily, weekly, monthly, or yearly).
 
 5. **Get Visits by Date Range**
    ```
-   GET http://localhost/lipa-tourism-dashboard/api/visits-by-date.php?start_date=2025-01-01&end_date=2025-12-31
+   GET http://localhost/lipa-tourism-dashboard/api/visits-by-date.php?start_date=2024-01-01&end_date=2024-12-31
    ```
    Returns visits filtered by the specified date range.
 
@@ -110,13 +110,17 @@ The application will be available at:
    ```
    GET http://localhost/lipa-tourism-dashboard/api/visitor-trends.php
    ```
-   Returns visitor trends data for analysis.
+   Returns visitor trends data for the last 30 days.
 
-7. **Get Visits by Landmark**
+7. **Get Landmark Details**
    ```
-   GET http://localhost/lipa-tourism-dashboard/api/visits.php?landmark_id=1
+   GET http://localhost/lipa-tourism-dashboard/api/landmark-details.php?id=1
    ```
-   Returns visits filtered by a specific landmark ID.
+   Returns detailed information about a specific landmark, including:
+   - Landmark details
+   - Total visits and visitors
+   - Last visit date
+   - Recent visits (last 10)
 
 ## Database Schema
 

@@ -31,30 +31,121 @@ const Dashboard = () => {
     const [landmarksData, setLandmarksData] = useState([]);
     const [visitsData, setVisitsData] = useState([]);
     const [trendsData, setTrendsData] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [retryCount, setRetryCount] = useState(0);
+    const maxRetries = 3;
+
+    const handleImageError = (e) => {
+        e.target.onerror = null; // Prevent infinite loop
+        e.target.src = '/assets/images/landmarks/default.jpg';
+    };
+
+    const fetchData = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+
+            const [landmarksRes, visitsRes, trendsRes] = await Promise.all([
+                fetch('http://localhost/lipa-tourism-dashboard/api/landmarks.php'),
+                fetch('http://localhost/lipa-tourism-dashboard/api/visits.php'),
+                fetch('http://localhost/lipa-tourism-dashboard/api/visitor-trends.php')
+            ]);
+
+            // Check if any response is not ok
+            if (!landmarksRes.ok || !visitsRes.ok || !trendsRes.ok) {
+                throw new Error('Failed to fetch data from one or more endpoints');
+            }
+
+            const landmarks = await landmarksRes.json();
+            const visits = await visitsRes.json();
+            const trends = await trendsRes.json();
+
+            // Validate data
+            if (!Array.isArray(landmarks) || !Array.isArray(visits) || !Array.isArray(trends)) {
+                throw new Error('Invalid data format received from server');
+            }
+
+            // Ensure all landmarks have an image URL
+            const processedLandmarks = landmarks.map(landmark => ({
+                ...landmark,
+                image_url: landmark.image_url || 'default.jpg'
+            }));
+
+            setLandmarksData(processedLandmarks);
+            setVisitsData(visits);
+            setTrendsData(trends);
+            setLoading(false);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            setError(error.message);
+            setLoading(false);
+
+            // Implement retry mechanism
+            if (retryCount < maxRetries) {
+                setTimeout(() => {
+                    setRetryCount(prev => prev + 1);
+                    fetchData();
+                }, 2000 * (retryCount + 1)); // Exponential backoff
+            }
+        }
+    };
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const [landmarksRes, visitsRes, trendsRes] = await Promise.all([
-                    fetch('http://localhost/lipa-tourism-dashboard/api/landmarks.php'),
-                    fetch('http://localhost/lipa-tourism-dashboard/api/visits.php'),
-                    fetch('http://localhost/lipa-tourism-dashboard/api/visitor-trends.php')
-                ]);
-
-                const landmarks = await landmarksRes.json();
-                const visits = await visitsRes.json();
-                const trends = await trendsRes.json();
-
-                setLandmarksData(landmarks);
-                setVisitsData(visits);
-                setTrendsData(trends);
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-        };
-
         fetchData();
-    }, []);
+    }, [retryCount]);
+
+    // Loading state
+    if (loading) {
+        return (
+            <div className="container mx-auto p-4">
+                <div className="flex items-center justify-center h-64">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+                    <span className="ml-3">Loading dashboard data...</span>
+                </div>
+            </div>
+        );
+    }
+
+    // Error state
+    if (error) {
+        return (
+            <div className="container mx-auto p-4">
+                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                    <strong className="font-bold">Error!</strong>
+                    <span className="block sm:inline"> {error}</span>
+                    {retryCount < maxRetries && (
+                        <span className="block sm:inline mt-2">
+                            Retrying... (Attempt {retryCount + 1} of {maxRetries})
+                        </span>
+                    )}
+                    {retryCount >= maxRetries && (
+                        <button
+                            onClick={() => {
+                                setRetryCount(0);
+                                fetchData();
+                            }}
+                            className="mt-2 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                        >
+                            Retry
+                        </button>
+                    )}
+                </div>
+            </div>
+        );
+    }
+
+    // No data state
+    if (!landmarksData.length || !visitsData.length || !trendsData.length) {
+        return (
+            <div className="container mx-auto p-4">
+                <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative" role="alert">
+                    <strong className="font-bold">No Data Available</strong>
+                    <span className="block sm:inline"> There is no data to display at the moment.</span>
+                </div>
+            </div>
+        );
+    }
 
     const barChartData = {
         labels: landmarksData.map(landmark => landmark.name),

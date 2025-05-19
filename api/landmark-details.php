@@ -33,26 +33,51 @@ try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    // Get visitor trends for the last 30 days
+    // Get landmark ID from query parameter
+    $landmark_id = $_GET['id'] ?? null;
+
+    if (!$landmark_id) {
+        handleError('Landmark ID is required', 400);
+    }
+
+    // Get landmark details with visit statistics
     $stmt = $pdo->prepare("
         SELECT 
-            DATE(visit_date) as date,
-            COUNT(*) as visit_count,
-            SUM(visitor_count) as total_visitors
-        FROM visits
-        WHERE visit_date >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
-        GROUP BY DATE(visit_date)
-        ORDER BY date DESC
+            l.*,
+            COUNT(v.id) as total_visits,
+            SUM(v.visitor_count) as total_visitors,
+            MAX(v.visit_date) as last_visit_date
+        FROM landmarks l
+        LEFT JOIN visits v ON l.id = v.landmark_id
+        WHERE l.id = :landmark_id
+        GROUP BY l.id
     ");
     
-    $stmt->execute();
-    $trends = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $stmt->execute(['landmark_id' => $landmark_id]);
+    $landmark = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$landmark) {
+        handleError('Landmark not found', 404);
+    }
+
+    // Get recent visits for this landmark
+    $stmt = $pdo->prepare("
+        SELECT 
+            visit_date,
+            visitor_count
+        FROM visits
+        WHERE landmark_id = :landmark_id
+        ORDER BY visit_date DESC
+        LIMIT 10
+    ");
+    
+    $stmt->execute(['landmark_id' => $landmark_id]);
+    $recent_visits = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     // Format the response
     $response = [
-        'labels' => array_column($trends, 'date'),
-        'visits' => array_column($trends, 'visit_count'),
-        'visitors' => array_column($trends, 'total_visitors')
+        'landmark' => $landmark,
+        'recent_visits' => $recent_visits
     ];
 
     ob_clean(); // Clear any output before sending response
@@ -66,4 +91,4 @@ try {
     // Clean up output buffer
     ob_end_clean();
 }
-?>
+?> 
